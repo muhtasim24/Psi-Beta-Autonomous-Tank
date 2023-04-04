@@ -6,11 +6,9 @@ SoftwareSerial BTSerial(0, 1); // RX, TX pins of HC-05 Bluetooth module
 // TX for transmitting
 
 //  L298N Motor Driver #1 pin definitions
-int enablePinA = 6; // PWM pin for controlling motor1 speed
 int in1Pin = 8;    // input pin 1 for motor1 direction
 int in2Pin = 9;    // input pin 2 for motor1 direction
 
-int enablePinB = 7;   // PWM pin for controlling motor2 speed
 int in3Pin = 10;   // input pin 3 for Motor2 Direction
 int in4Pin = 11;   // input pin 4 for Motor2 Direction
 
@@ -18,24 +16,25 @@ int servoPin = 12; // pin to control servo
 Servo Servo1;
 
 //  L298N Motor Driver #2 pin definitions
-int enablePinC = 5;   //  PWM pin for controlling load motor speed
-int in5Pin = 4;    // input pin 1 for positive side of load motor 
-int in6Pin = 3;    // input pin 2 for negative side of load motor
+int in5Pin = 6;    // input pin 1 for positive side of load motor 1
+int in6Pin = 7;    // input pin 2 for negative side of load motor 1
+
+int in7Pin = 5;     // input pin 1 for positive side of load motor 2
+int in8Pin = 4;     // input pin 2 for negative side of load motor 2
 
 void setup() {
   Serial.begin(9600); // initialize serial Baud Rate
   BTSerial.begin(9600);  // initialize bluetooth Baud Rate
   //  Baud Rate = Rate at which information travels in communication, 9600 bits per second
   // Initialize All the pins 
-  pinMode(enablePinA, OUTPUT);
-  pinMode(enablePinB, OUTPUT);
-  pinMode(enablePinC, OUTPUT);
   pinMode(in1Pin, OUTPUT);
   pinMode(in2Pin, OUTPUT);
   pinMode(in3Pin, OUTPUT);
   pinMode(in4Pin, OUTPUT);
   pinMode(in5Pin, OUTPUT);
   pinMode(in6Pin, OUTPUT);
+  pinMode(in7Pin, OUTPUT);
+  pinMode(in8Pin, OUTPUT);
   Servo1.attach(servoPin);
 }
 
@@ -51,9 +50,7 @@ void loop() {
     if (command == 'W') {       
       Serial.println("Moving forward"); //  print what command its carrying out
       Servo1.write(90); //  intial servo angle
-      analogWrite(enablePinA, 255);   // the Enable Pins control the speed of the motors, we made it max speed
-      analogWrite(enablePinB, 255);   // the Enable Pins control the speed of the motors, we made it max speed
-
+ 
       // One pin is HIGH AND LOW so then electricity can flow one direction from pin1 to 2 or 2 to 1
       //  both motors spin in opposite directions of each other to move forward
       digitalWrite(in1Pin, HIGH);     // Turning on Pin 1 of Motor 1 
@@ -69,8 +66,7 @@ void loop() {
     else if (command == 'S') {      // Command to move backward
       Servo1.write(90);
       Serial.println("Moving backward");  //  print what command its carrying out
-      analogWrite(enablePinA, 255); //  setting motors to run at max speed
-      analogWrite(enablePinB, 255);
+
       //both moth spin in opposite directions of each other, reversed of 'W', to move backward
       digitalWrite(in1Pin, LOW);    // Turning Off Pin1 of Motor 1
       digitalWrite(in2Pin, HIGH);   // Turning On Pin2 of Motor 1
@@ -83,8 +79,6 @@ void loop() {
     else if (command == 'A') {      // Command to move left
       Servo1.write(90);
       Serial.println("Moving left");  //  print what command its carrying out
-      analogWrite(enablePinA, 255); //  setting motors to run at max speed
-      analogWrite(enablePinB, 255);
 
       // Need motors turning in same direction to turn left
 
@@ -99,8 +93,6 @@ void loop() {
     else if (command == 'D') {
       Servo1.write(90);
       Serial.println("Moving right"); //  print what command its carrying out
-      analogWrite(enablePinA, 255);
-      analogWrite(enablePinB, 255);
 
       // Need motors turning in same direction, reversed of 'A', to turn right
 
@@ -122,15 +114,18 @@ void loop() {
     }
     else if (command == 'L') {
       Servo1.write(90);
-      analogWrite(enablePinC, 255);
 
       Serial.println("Loading Weapon"); //  print what command its carrying out
       digitalWrite(in5Pin, LOW);
       digitalWrite(in6Pin, HIGH);
-      delay(5000); // spin motor for 4.6 seconds to complete 1 full rotation to load gun
-      //delay(100); //  debugging purposes
+      digitalWrite(in7Pin, HIGH);
+      digitalWrite(in8Pin, LOW);
+      //delay(5505); // spin motor for 4.6 seconds to complete 1 full rotation to load gun
+      delay(100); //  debugging purposes
       digitalWrite(in5Pin, LOW);
       digitalWrite(in6Pin, LOW);
+      digitalWrite(in7Pin, LOW);
+      digitalWrite(in8Pin, LOW);      
     }
     else if (command == 'H') {
       Servo1.write(90);
@@ -141,9 +136,8 @@ void loop() {
       digitalWrite(in4Pin, LOW);
       digitalWrite(in5Pin, LOW);
       digitalWrite(in6Pin, LOW);
-      analogWrite(enablePinA, 0);   // SETTING THE SPEED OF THE MOTORS TO 0
-      analogWrite(enablePinB, 0);
-      analogWrite(enablePinC, 0);
+      digitalWrite(in7Pin, LOW);
+      digitalWrite(in8Pin, LOW);
       delay(1000);  //  wait 1 second before accepting next command
     }
 
@@ -157,10 +151,10 @@ void loop() {
       digitalWrite(in4Pin, LOW);
       digitalWrite(in5Pin, LOW);
       digitalWrite(in6Pin, LOW);
-      analogWrite(enablePinA, 0);   // SETTING THE SPEED OF THE MOTORS TO 0
-      analogWrite(enablePinB, 0);
-      analogWrite(enablePinC, 0);
+      digitalWrite(in7Pin, LOW);
+      digitalWrite(in8Pin, LOW);
       delay(1000);  //  wait 1 second before accepting next command
     }
   }
 }
+
